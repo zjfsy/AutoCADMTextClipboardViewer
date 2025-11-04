@@ -1,39 +1,39 @@
 option casemap:none
 
-externdef __imp_AdjustWindowRect: qword
-externdef __imp_CloseClipboard: qword
-externdef __imp_CreateFontIndirectW: qword
-externdef __imp_CreateWindowExW: qword
-externdef __imp_DefWindowProcW: qword
-externdef __imp_DeleteObject: qword
-externdef __imp_DestroyWindow: qword
-externdef __imp_DispatchMessageW: qword
-externdef __imp_EmptyClipboard: qword
-externdef __imp_ExitProcess: qword
-externdef __imp_GetClipboardData: qword
-externdef __imp_GetDC: qword
-externdef __imp_GetDeviceCaps: qword
-externdef __imp_GetMessageW: qword
-externdef __imp_GlobalAlloc: qword
-externdef __imp_GlobalFree: qword
-externdef __imp_GlobalLock: qword
-externdef __imp_GlobalUnlock: qword
-externdef __imp_IsClipboardFormatAvailable: qword
-externdef __imp_LoadCursorW: qword
-externdef __imp_MessageBoxW: qword
-externdef __imp_OpenClipboard: qword
-externdef __imp_PostQuitMessage: qword
-externdef __imp_RegisterClassExW: qword
-externdef __imp_RegisterClipboardFormatW: qword
-externdef __imp_ReleaseDC: qword
-externdef __imp_SendMessageW: qword
-externdef __imp_SetClipboardData: qword
-externdef __imp_SetProcessDPIAware: qword
-externdef __imp_ShowWindow: qword
-externdef __imp_TranslateMessage: qword
-externdef __imp_UpdateWindow: qword
-
-extern __ImageBase: byte
+extern __imp_AdjustWindowRect: qword
+extern __imp_CloseClipboard: qword
+extern __imp_CreateFontIndirectW: qword
+extern __imp_CreateWindowExW: qword
+extern __imp_DefWindowProcW: qword
+extern __imp_DeleteObject: qword
+extern __imp_DestroyWindow: qword
+extern __imp_DispatchMessageW: qword
+extern __imp_EmptyClipboard: qword
+extern __imp_ExitProcess: qword
+extern __imp_GetClipboardData: qword
+extern __imp_GetDC: qword
+extern __imp_GetDeviceCaps: qword
+extern __imp_GetMessageW: qword
+extern __imp_GlobalAlloc: qword
+extern __imp_GlobalFree: qword
+extern __imp_GlobalLock: qword
+extern __imp_GlobalUnlock: qword
+extern __imp_IsClipboardFormatAvailable: qword
+extern __imp_LoadCursorW: qword
+extern __imp_LoadIconW: qword
+extern __imp_MessageBoxW: qword
+extern __imp_OpenClipboard: qword
+extern __imp_PostQuitMessage: qword
+extern __imp_RegisterClassExW: qword
+extern __imp_RegisterClipboardFormatW: qword
+extern __imp_ReleaseDC: qword
+extern __imp_SendMessageW: qword
+extern __imp_SetClipboardData: qword
+extern __imp_SetProcessDPIAware: qword
+extern __imp_ShowWindow: qword
+extern __imp_TranslateMessage: qword
+extern __imp_UpdateWindow: qword
+extern __ImageBase: qword
 
 .data?
 hwndsubctrl dq  6 dup(?)
@@ -82,22 +82,24 @@ winmain proc
     test    eax,eax
     je      $1
     mov     dword ptr[clipboardid+08h],eax
-    mov     edx,7F00h                                   ;IDC_ARROW
-    xor     ecx,ecx
-    call    qword ptr[__imp_LoadCursorW]
-    lea     rbx,[winproc]
-    lea     rcx,[__ImageBase]
-    lea     rdx,[programname]
     mov     qword ptr[rsp+20h],50h                      ;cbSize & style
-    mov     qword ptr[rsp+28h],rbx                      ;lpfnWndProc
-    mov     qword ptr[rsp+30h],00h                      ;cbClsExtra & cbWndExtra
+    lea     rax,[winproc]
+    mov     qword ptr[rsp+28h],rax                      ;lpfnWndProc
+    mov     edx,00000001h                               ;图标资源ID
+    lea     rcx,[__ImageBase]
     mov     qword ptr[rsp+38h],rcx                      ;hInstance
-    mov     qword ptr[rsp+40h],00h                      ;hIcon
+    call    qword ptr[__imp_LoadIconW]
+    mov     qword ptr[rsp+40h],rax                      ;hIcon
+    mov     edx,00007F00h                               ;IDC_ARROW
+    xor     ecx,ecx
+    mov     qword ptr[rsp+30h],rcx                      ;cbClsExtra & cbWndExtra
+    mov     qword ptr[rsp+58h],rcx                      ;lpszMenuName
+    mov     qword ptr[rsp+68h],rcx                      ;hIconSm
+    call    qword ptr[__imp_LoadCursorW]
     mov     qword ptr[rsp+48h],rax                      ;hCursor
     mov     qword ptr[rsp+50h],10h                      ;hbrBackground
-    mov     qword ptr[rsp+58h],00h                      ;lpszMenuName
-    mov     qword ptr[rsp+60h],rdx                      ;lpszClassName
-    mov     qword ptr[rsp+68h],00h                      ;hIconSm
+    lea     rax,[programname]
+    mov     qword ptr[rsp+60h],rax                      ;lpszClassName
     lea     rcx,[rsp+20h]
     call    qword ptr[__imp_RegisterClassExW]           ;注册窗口类
     test    ax,ax
